@@ -1,8 +1,3 @@
-
-// =====================================
-// RECRAFT AI - WASTE RECOGNITION
-// =====================================
-
 const MODEL_URL =
   "https://teachablemachine.withgoogle.com/models/XQ7tmbnx3/";
 
@@ -10,161 +5,275 @@ const CONFIDENCE_THRESHOLD = 0.70;
 
 let model = null;
 let selectedImage = null;
+let currentCategory = null;
 
-const imageInput = document.getElementById("imageInput");
-const preview = document.getElementById("preview");
-const identifyBtn = document.getElementById("identifyBtn");
-const modelStatus = document.getElementById("modelStatus");
-const result = document.getElementById("result");
+const $ = id => document.getElementById(id);
 
-// =====================================
-// PROJECT IDEAS
-// =====================================
+const imageInput = $("imageInput");
+const preview = $("preview");
+const identifyBtn = $("identifyBtn");
+const modelStatus = $("modelStatus");
+
+const resultPanel = $("resultPanel");
+const projectPanel = $("projectPanel");
+const tutorialPanel = $("tutorialPanel");
+
+const resultTitle = $("resultTitle");
+const resultDescription = $("resultDescription");
+const resultEmoji = $("resultEmoji");
+const confidenceText = $("confidenceText");
+
+// ======================================
+// PAGE NAVIGATION
+// ======================================
+
+function showPage(pageName) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
+
+  $(pageName).classList.add("active");
+
+  document.querySelectorAll(".nav-link").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === pageName
+    );
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ======================================
+// PROJECT DATABASE
+// ======================================
 
 const projects = {
   plastic: {
-    title: "Plastic Bottle Projects",
-    emoji: "🪴",
-    description: "Give your plastic bottle a useful second life!",
+    title: "Plastic Bottles!",
+    emoji: "🧴",
+    description: "Your item is a plastic bottle. Here are some creative ways to reuse it!",
     ideas: [
       {
         name: "Mini Plant Pot",
-        materials: "Plastic bottle, soil, small plant and paint.",
+        emoji: "🪴",
+        description: "Give a little plant a new home.",
+        difficulty: "Easy",
+        time: "15–20 minutes",
+        materials: [
+          "Clean plastic bottle",
+          "Soil",
+          "Small plant",
+          "Decorations or paint"
+        ],
         steps: [
           "Ask an adult to prepare a bottle with a smooth, safe opening.",
           "Make sure the bottle is clean and dry.",
           "Add a little soil.",
-          "Plant your small plant and decorate the outside."
+          "Place your small plant inside.",
+          "Decorate the outside of your new plant pot."
         ],
-        difficulty: "Easy",
-        time: "15–20 minutes"
+        safety: "An adult should prepare any cut edges. Make sure there are no sharp edges before handling the bottle."
       },
       {
         name: "Desk Organiser",
-        materials: "Clean plastic bottle, decorative paper and glue.",
-        steps: [
-          "Ask an adult to prepare a bottle with safe, smooth edges.",
-          "Clean and dry the bottle.",
-          "Decorate its outside with paper.",
-          "Use it to organise pencils and stationery."
-        ],
+        emoji: "✏️",
+        description: "Keep your stationery neat and organised.",
         difficulty: "Easy",
-        time: "15 minutes"
+        time: "15 minutes",
+        materials: [
+          "Clean plastic bottle",
+          "Decorative paper",
+          "Glue",
+          "Stickers or decorations"
+        ],
+        steps: [
+          "Ask an adult to prepare the bottle with safe, smooth edges.",
+          "Clean and dry the bottle.",
+          "Wrap decorative paper around its outside.",
+          "Add stickers or other decorations.",
+          "Use it to store pencils and stationery."
+        ],
+        safety: "Only use a bottle with smooth, protected edges. Ask an adult for help with preparation."
       },
       {
         name: "Self-Watering Planter",
-        materials: "Plastic bottle, cotton string, soil and a plant.",
+        emoji: "🌱",
+        description: "Create a planter that helps supply water to a plant.",
+        difficulty: "Medium",
+        time: "25 minutes",
+        materials: [
+          "Plastic bottle",
+          "Cotton string",
+          "Soil",
+          "Small plant",
+          "Water"
+        ],
         steps: [
           "Ask an adult to prepare the bottle safely.",
           "Set up a clean bottle planter with a cotton string wick.",
-          "Add soil and your plant.",
-          "Place the wick so it can draw water from the reservoir."
+          "Add soil and your plant to the planter section.",
+          "Position the wick so it can draw water from the reservoir.",
+          "Add water and check that the wick works."
         ],
-        difficulty: "Medium",
-        time: "25 minutes"
+        safety: "An adult should prepare the bottle. Keep the planter stable and use clean water."
       }
     ]
   },
 
   aluminium: {
-    title: "Aluminium Can Projects",
+    title: "Aluminium Cans!",
     emoji: "🥫",
-    description: "Turn an empty can into something practical!",
+    description: "Your item is an aluminium can. Let's turn it into something useful!",
     ideas: [
       {
         name: "Pencil Holder",
-        materials: "Clean, adult-prepared can, paper and glue.",
-        steps: [
-          "Ask an adult to prepare a can with no sharp edges.",
-          "Check that its edges are safely covered.",
-          "Wrap decorative paper around the can.",
-          "Use it to store pens and pencils."
-        ],
+        emoji: "✏️",
+        description: "Give your desk a creative organiser.",
         difficulty: "Easy",
-        time: "15 minutes"
-      },
-      {
-        name: "Decorative Storage",
-        materials: "Safe prepared can, paint and decorations.",
+        time: "15 minutes",
+        materials: [
+          "Clean, adult-prepared aluminium can",
+          "Decorative paper",
+          "Glue",
+          "Stickers"
+        ],
         steps: [
           "Start with a clean can prepared by an adult.",
-          "Make sure all edges are smooth and protected.",
-          "Decorate the outside.",
+          "Check that its edges are fully smooth and protected.",
+          "Wrap decorative paper around the outside.",
+          "Add your favourite decorations.",
+          "Use it to organise your stationery."
+        ],
+        safety: "Never cut or handle sharp can edges. Use only an adult-prepared can with all edges safely covered."
+      },
+      {
+        name: "Decorative Storage Container",
+        emoji: "🎨",
+        description: "Make a small container for everyday items.",
+        difficulty: "Easy",
+        time: "20 minutes",
+        materials: [
+          "Clean, safe aluminium can",
+          "Paint suitable for the surface",
+          "Decorations",
+          "Paintbrush"
+        ],
+        steps: [
+          "Ask an adult to prepare and check the can.",
+          "Make sure all edges are protected.",
+          "Decorate the outside with suitable paint.",
+          "Allow the paint to dry completely.",
           "Use it to store small stationery items."
         ],
-        difficulty: "Easy",
-        time: "20 minutes"
+        safety: "The can must have smooth, protected edges. Follow paint product safety instructions and ask an adult for help."
       },
       {
         name: "Mini Planter Cover",
-        materials: "Clean, safe can and a small plant pot.",
+        emoji: "🌼",
+        description: "Create a decorative home for a small plant pot.",
+        difficulty: "Easy",
+        time: "15 minutes",
+        materials: [
+          "Clean, adult-prepared aluminium can",
+          "Small plant pot",
+          "Decorative paper",
+          "Glue"
+        ],
         steps: [
-          "Use a can prepared by an adult with protected edges.",
-          "Decorate its outside.",
+          "Choose a clean can prepared by an adult.",
+          "Check that all edges are protected.",
+          "Decorate its outside with paper.",
           "Place a small plant pot inside.",
           "Use it as a decorative planter cover."
         ],
-        difficulty: "Easy",
-        time: "15 minutes"
+        safety: "Use the can only as an outer cover for a separate plant pot. Never use one with exposed sharp edges."
       }
     ]
   },
 
   cardboard: {
-    title: "Cardboard Box Projects",
+    title: "Cardboard Boxes!",
     emoji: "📦",
-    description: "Discover creative ways to reuse cardboard!",
+    description: "Your item is a cardboard box. Here are some ways to give it a new purpose!",
     ideas: [
       {
         name: "Desk Organiser",
-        materials: "Cardboard, ruler, glue and decorative paper.",
+        emoji: "🗂️",
+        description: "Create compartments for your school supplies.",
+        difficulty: "Easy",
+        time: "25 minutes",
+        materials: [
+          "Clean cardboard",
+          "Ruler",
+          "Glue",
+          "Decorative paper"
+        ],
         steps: [
           "Choose a clean cardboard box.",
-          "Ask an adult to help prepare pieces if cutting is needed.",
+          "Ask an adult to help prepare any pieces that need cutting.",
           "Arrange the pieces into compartments.",
-          "Decorate and use your organiser."
+          "Secure the pieces with glue.",
+          "Decorate and organise your stationery."
         ],
-        difficulty: "Easy",
-        time: "25 minutes"
+        safety: "Ask an adult to help with any cutting or preparation."
       },
       {
         name: "Mini Storage Box",
-        materials: "Small cardboard box, glue and decorative paper.",
+        emoji: "🎁",
+        description: "Turn an ordinary box into useful storage.",
+        difficulty: "Easy",
+        time: "20 minutes",
+        materials: [
+          "Small cardboard box",
+          "Decorative paper",
+          "Glue",
+          "Ribbon or stickers"
+        ],
         steps: [
           "Choose a clean cardboard box.",
           "Reinforce any loose corners.",
-          "Cover it with decorative paper.",
+          "Cover the outside with decorative paper.",
+          "Add stickers or ribbon.",
           "Use it to store small belongings."
         ],
-        difficulty: "Easy",
-        time: "20 minutes"
+        safety: "Use an adult's help if the box needs cutting or reshaping."
       },
       {
         name: "Phone Stand",
-        materials: "Sturdy cardboard and decorative paper.",
+        emoji: "📱",
+        description: "Make a simple stand for your phone.",
+        difficulty: "Medium",
+        time: "20 minutes",
+        materials: [
+          "Sturdy cardboard",
+          "Decorative paper",
+          "Glue",
+          "Ruler"
+        ],
         steps: [
           "Choose a sturdy piece of cardboard.",
           "Ask an adult to help prepare the shape.",
           "Fold and assemble a stable stand.",
-          "Decorate and test it with an empty phone-sized space first."
+          "Decorate the finished stand.",
+          "Test its stability before placing your phone on it."
         ],
-        difficulty: "Medium",
-        time: "20 minutes"
+        safety: "Ask an adult to help with cutting. Make sure the stand is stable before using it."
       }
     ]
   }
 };
 
-// =====================================
-// LOAD THE REAL AI MODEL
-// =====================================
+// ======================================
+// LOAD AI MODEL
+// ======================================
 
 async function loadModel() {
   try {
-    modelStatus.textContent = "Loading the ReCraft AI model...";
+    modelStatus.textContent = "Loading your AI assistant...";
 
     if (typeof tmImage === "undefined") {
-      throw new Error("The AI library could not be loaded.");
+      throw new Error("The Teachable Machine library did not load.");
     }
 
     model = await tmImage.load(
@@ -176,61 +285,68 @@ async function loadModel() {
     identifyBtn.disabled = !selectedImage;
 
   } catch (error) {
-    console.error("Model loading error:", error);
+    console.error(error);
     modelStatus.textContent =
-      "AI model could not load. Please refresh and try again.";
+      "We couldn't load the AI model. Please refresh and try again.";
   }
 }
 
-// =====================================
-// IMAGE UPLOAD AND PREVIEW
-// =====================================
+// ======================================
+// IMAGE UPLOAD
+// ======================================
 
-imageInput.addEventListener("change", function(event) {
+imageInput.addEventListener("change", event => {
   const file = event.target.files[0];
 
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    modelStatus.textContent = "Please select an image file.";
+    $("errorMessage").textContent = "Please choose an image file.";
     return;
   }
 
   if (file.size > 10 * 1024 * 1024) {
-    modelStatus.textContent = "Please choose an image under 10 MB.";
+    $("errorMessage").textContent = "Please choose an image under 10 MB.";
     return;
   }
 
+  $("errorMessage").textContent = "";
+
   const reader = new FileReader();
 
-  reader.onload = function(e) {
-    preview.onload = function() {
+  reader.onload = event => {
+    preview.onload = () => {
       selectedImage = preview;
       preview.hidden = false;
       identifyBtn.disabled = !model;
-      result.replaceChildren();
+      $("removeBtn").hidden = false;
+
+      resultPanel.hidden = true;
+      projectPanel.hidden = true;
+      tutorialPanel.hidden = true;
+
       modelStatus.textContent = model
-        ? "Image ready! Click Identify My Item."
-        : "Image ready! Waiting for AI model...";
+        ? "Image ready! Let's identify it."
+        : "Image ready! Waiting for the AI model...";
     };
 
-    preview.src = e.target.result;
+    preview.src = event.target.result;
   };
 
   reader.readAsDataURL(file);
 });
 
-// =====================================
-// IDENTIFY MATERIAL
-// =====================================
+// ======================================
+// IDENTIFY ITEM
+// ======================================
 
-identifyBtn.addEventListener("click", async function() {
+identifyBtn.addEventListener("click", async () => {
   if (!model || !selectedImage) return;
 
   identifyBtn.disabled = true;
   identifyBtn.textContent = "Analysing...";
 
-  result.replaceChildren();
+  $("errorMessage").textContent = "";
 
   try {
     const predictions = await model.predict(selectedImage);
@@ -239,183 +355,259 @@ identifyBtn.addEventListener("click", async function() {
       a.probability > b.probability ? a : b
     );
 
-    const confidence = best.probability;
-    const label = best.className.toLowerCase();
+    const category = getCategory(best.className);
 
-    const category = getCategory(label);
-
-    if (confidence < CONFIDENCE_THRESHOLD || !category) {
-      showUncertainResult(best.className, confidence);
+    if (!category || best.probability < CONFIDENCE_THRESHOLD) {
+      showUncertain(best);
       return;
     }
 
-    showResult(category, best.className, confidence);
+    currentCategory = category;
+    displayResult(category, best);
 
   } catch (error) {
-    console.error("Prediction error:", error);
-    result.textContent =
-      "Something went wrong while analysing your image. Please try again.";
+    console.error(error);
+    $("errorMessage").textContent =
+      "Something went wrong while identifying your image. Please try again.";
   } finally {
     identifyBtn.disabled = !model || !selectedImage;
-    identifyBtn.textContent = "Identify My Item";
+    identifyBtn.textContent = "Identify My Item →";
   }
 });
 
-// =====================================
-// MATCH MODEL LABELS TO CATEGORIES
-// =====================================
+// ======================================
+// MATCH MODEL LABELS
+// ======================================
 
 function getCategory(label) {
-  if (label.includes("plastic") || label.includes("bottle")) {
+  const name = label.toLowerCase();
+
+  if (name.includes("plastic") || name.includes("bottle")) {
     return "plastic";
   }
 
-  if (label.includes("aluminium") ||
-      label.includes("aluminum") ||
-      label.includes("can")) {
+  if (
+    name.includes("aluminium") ||
+    name.includes("aluminum") ||
+    name.includes("can")
+  ) {
     return "aluminium";
   }
 
-  if (label.includes("cardboard") ||
-      label.includes("carton") ||
-      label.includes("box")) {
+  if (
+    name.includes("cardboard") ||
+    name.includes("carton") ||
+    name.includes("box")
+  ) {
     return "cardboard";
   }
 
   return null;
 }
 
-// =====================================
-// DISPLAY PREDICTION
-// =====================================
+// ======================================
+// SHOW IDENTIFICATION RESULT
+// ======================================
 
-function showResult(category, label, confidence) {
-  const project = projects[category];
+function displayResult(category, prediction) {
+  const item = projects[category];
 
-  const heading = document.createElement("h3");
-  heading.textContent = "🌿 We identified your item!";
+  resultEmoji.textContent = item.emoji;
+  resultTitle.textContent = item.title;
+  resultDescription.textContent = item.description;
 
-  const prediction = document.createElement("p");
-  prediction.textContent = project.emoji + " " + project.title;
+  confidenceText.textContent =
+    "AI confidence: " +
+    (prediction.probability * 100).toFixed(1) + "%";
 
-  const score = document.createElement("p");
-  score.textContent =
-    "Model confidence: " + (confidence * 100).toFixed(1) + "%";
+  resultPanel.hidden = false;
+  projectPanel.hidden = true;
+  tutorialPanel.hidden = true;
 
-  const note = document.createElement("p");
-  note.textContent =
-    "Predicted category: " + label;
-
-  result.append(heading, prediction, score, note);
-
-  showProjects(category);
+  resultPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
-// =====================================
-// UNCERTAIN RESULT
-// =====================================
+function showUncertain(prediction) {
+  resultEmoji.textContent = "🤔";
+  resultTitle.textContent = "Let's try another picture!";
+  resultDescription.textContent =
+    "The AI couldn't confidently identify this item. Its top prediction was " +
+    prediction.className +
+    ". Try a clearer picture of a plastic bottle, aluminium can or cardboard box.";
 
-function showUncertainResult(label, confidence) {
-  const heading = document.createElement("h3");
-  heading.textContent = "🤔 We're not confident enough yet.";
+  confidenceText.textContent =
+    "AI confidence: " +
+    (prediction.probability * 100).toFixed(1) + "%";
 
-  const message = document.createElement("p");
-  message.textContent =
-    "The model's top prediction was " + label +
-    " with " + (confidence * 100).toFixed(1) +
-    "% confidence. Try a clearer picture of one of our three trained categories.";
+  $("exploreBtn").hidden = true;
 
-  result.append(heading, message);
+  resultPanel.hidden = false;
+  projectPanel.hidden = true;
+  tutorialPanel.hidden = true;
+
+  resultPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
-// =====================================
-// SHOW MATCHING PROJECTS
-// =====================================
+// ======================================
+// OPEN PROJECT COLLECTION
+// ======================================
 
-function showProjects(category) {
-  const project = projects[category];
+$("exploreBtn").addEventListener("click", () => {
+  if (!currentCategory) return;
 
-  const container = document.createElement("div");
-  container.className = "project-results";
+  const item = projects[currentCategory];
 
-  const heading = document.createElement("h3");
-  heading.textContent = "✨ " + project.description;
-  container.appendChild(heading);
+  $("projectHeading").textContent =
+    "What can you create with " +
+    item.title.toLowerCase().replace("!", "") + "?";
 
-  project.ideas.forEach((idea) => {
+  $("projectIntro").textContent =
+    "Choose a project to see its materials and step-by-step instructions.";
+
+  const grid = $("projectGrid");
+  grid.replaceChildren();
+
+  item.ideas.forEach((idea, index) => {
     const card = document.createElement("article");
     card.className = "project-card";
 
-    const title = document.createElement("h4");
+    const button = document.createElement("button");
+    button.type = "button";
+
+    const icon = document.createElement("div");
+    icon.className = "project-icon";
+    icon.textContent = idea.emoji;
+
+    const title = document.createElement("h3");
     title.textContent = idea.name;
 
-    const materials = document.createElement("p");
-    materials.textContent = "Materials: " + idea.materials;
+    const description = document.createElement("p");
+    description.textContent = idea.description;
 
-    const difficulty = document.createElement("p");
-    difficulty.textContent =
-      "Difficulty: " + idea.difficulty +
-      " | Estimated time: " + idea.time;
+    const link = document.createElement("span");
+    link.className = "card-link";
+    link.textContent = "View tutorial →";
 
-    const stepsHeading = document.createElement("strong");
-    stepsHeading.textContent = "How to make it:";
+    button.append(icon, title, description, link);
+    button.addEventListener("click", () => openTutorial(index));
 
-    const steps = document.createElement("ol");
-
-    idea.steps.forEach((step) => {
-      const li = document.createElement("li");
-      li.textContent = step;
-      steps.appendChild(li);
-    });
-
-    const safety = document.createElement("p");
-    safety.className = "safety-note";
-    safety.textContent =
-      "Safety: Ask an adult for help with any cutting or preparation. Never handle sharp can edges.";
-
-    card.append(
-      title,
-      materials,
-      difficulty,
-      stepsHeading,
-      steps,
-      safety
-    );
-
-    container.appendChild(card);
+    card.appendChild(button);
+    grid.appendChild(card);
   });
 
-  result.appendChild(container);
+  resultPanel.hidden = true;
+  projectPanel.hidden = false;
+  tutorialPanel.hidden = true;
+
+  projectPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+});
+
+// ======================================
+// OPEN INDIVIDUAL TUTORIAL
+// ======================================
+
+function openTutorial(index) {
+  const idea = projects[currentCategory].ideas[index];
+
+  $("tutorialEmoji").textContent = idea.emoji;
+  $("tutorialTitle").textContent = idea.name;
+  $("tutorialDescription").textContent = idea.description;
+  $("tutorialDifficulty").textContent =
+    "Difficulty: " + idea.difficulty;
+  $("tutorialTime").textContent =
+    "Estimated time: " + idea.time;
+
+  const materialsList = $("materialsList");
+  materialsList.replaceChildren();
+
+  idea.materials.forEach(material => {
+    const li = document.createElement("li");
+    li.textContent = material;
+    materialsList.appendChild(li);
+  });
+
+  const stepsList = $("stepsList");
+  stepsList.replaceChildren();
+
+  idea.steps.forEach(step => {
+    const li = document.createElement("li");
+    li.textContent = step;
+    stepsList.appendChild(li);
+  });
+
+  $("safetyText").textContent = idea.safety;
+
+  projectPanel.hidden = true;
+  tutorialPanel.hidden = false;
+
+  tutorialPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
-// =====================================
-// RESET UPLOAD
-// =====================================
+// ======================================
+// BACK BUTTONS
+// ======================================
 
-const resetButton = document.createElement("button");
+$("backToResult").addEventListener("click", () => {
+  projectPanel.hidden = true;
+  tutorialPanel.hidden = true;
+  resultPanel.hidden = false;
 
-resetButton.textContent = "Choose another image";
-resetButton.className = "primary-btn";
-resetButton.style.marginTop = "20px";
-resetButton.type = "button";
+  resultPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+});
 
-resetButton.addEventListener("click", function() {
+$("backToProjects").addEventListener("click", () => {
+  tutorialPanel.hidden = true;
+  projectPanel.hidden = false;
+
+  projectPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+});
+
+// ======================================
+// REMOVE IMAGE AND RESET
+// ======================================
+
+$("removeBtn").addEventListener("click", () => {
   imageInput.value = "";
   preview.removeAttribute("src");
   preview.hidden = true;
+
   selectedImage = null;
+  currentCategory = null;
 
-  result.replaceChildren();
   identifyBtn.disabled = true;
-  modelStatus.textContent = "Choose an image to get started.";
+  $("removeBtn").hidden = true;
 
-  resetButton.remove();
+  resultPanel.hidden = true;
+  projectPanel.hidden = true;
+  tutorialPanel.hidden = true;
+
+  $("exploreBtn").hidden = false;
+  $("errorMessage").textContent = "";
+
+  modelStatus.textContent =
+    model ? "🌱 ReCraft AI is ready!" : "Loading AI model...";
 });
 
-imageInput.parentElement.appendChild(resetButton);
-
-// =====================================
+// ======================================
 // START RECRAFT AI
-// =====================================
+// ======================================
 
 loadModel();
