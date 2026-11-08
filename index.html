@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReCraft AI | Give Waste a Second Life</title>
+  <meta name="description" content="ReCraft AI uses image recognition to help turn everyday waste into useful creations.">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header class="navbar">
+    <a href="#" class="logo">♻ ReCraft<span>AI</span></a>
+
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#identify">Identify Waste</a>
+      <a href="#ideas">Explore Ideas</a>
+      <a href="#how">How It Works</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <p class="eyebrow">AI • CREATIVITY • SUSTAINABILITY</p>
+        <h1>Don't Waste It.<br>
+          <span>Reimagine It.</span><br>
+          Transform It.
+        </h1>
+        <p>
+          Meet ReCraft AI — your creative partner in turning
+          everyday waste into something wonderful.
+        </p>
+        <a href="#identify" class="primary-btn">Try Waste Recognition →</a>
+      </div>
+
+      <div class="hero-art">
+        <div class="plant-icon">🌱</div>
+        <div class="hero-circle">♻</div>
+        <p>A SMALL CHANGE.<br>A GREENER FUTURE.</p>
+      </div>
+    </section>
+
+    <section class="intro section" id="about">
+      <p class="eyebrow">OUR MISSION</p>
+      <h2>Waste isn't the end of the story.</h2>
+      <p>
+        ReCraft AI combines artificial intelligence and
+        creativity to encourage responsible consumption.
+        We help people discover new possibilities for
+        materials that might otherwise be thrown away.
+      </p>
+    </section>
+
+    <section class="identify section" id="identify">
+      <p class="eyebrow">MEET YOUR AI ASSISTANT</p>
+      <h2>What are you throwing away?</h2>
+      <p>Upload a picture and let ReCraft AI identify its material.</p>
+
+      <div class="upload-box">
+        <div class="upload-icon">📸</div>
+        <h3>Upload your waste item</h3>
+        <p>Supported categories: plastic bottles, aluminium cans and cardboard boxes.</p>
+
+        <input type="file" id="imageInput" accept="image/*">
+
+        <img id="preview" alt="Your uploaded item preview" hidden>
+
+        <button id="identifyBtn" class="primary-btn" disabled>
+          Identify My Item
+        </button>
+
+        <p id="modelStatus">AI model is preparing...</p>
+        <div id="result" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="ideas section" id="ideas">
+      <p class="eyebrow">A SECOND LIFE FOR WASTE</p>
+      <h2>Discover what you can create.</h2>
+
+      <div class="idea-grid">
+        <article class="idea-card">
+          <div class="idea-icon">🪴</div>
+          <h3>Plastic Bottles</h3>
+          <p>Turn bottles into plant pots, desk organisers and self-watering planters.</p>
+        </article>
+
+        <article class="idea-card">
+          <div class="idea-icon">✏️</div>
+          <h3>Aluminium Cans</h3>
+          <p>Transform cans into pencil holders and decorative containers.</p>
+        </article>
+
+        <article class="idea-card">
+          <div class="idea-icon">📦</div>
+          <h3>Cardboard Boxes</h3>
+          <p>Give cardboard a new purpose with storage boxes and desk organisers.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="how section" id="how">
+      <p class="eyebrow">SIMPLE. SMART. SUSTAINABLE.</p>
+      <h2>How ReCraft AI works</h2>
+
+      <div class="steps">
+        <div><span>01</span><h3>Upload</h3><p>Choose a picture of your waste item.</p></div>
+        <div><span>02</span><h3>Identify</h3><p>Our trained image classifier predicts its category.</p></div>
+        <div><span>03</span><h3>Explore</h3><p>Discover creative upcycling suggestions.</p></div>
+        <div><span>04</span><h3>Recreate</h3><p>Give your materials a second life!</p></div>
+      </div>
+    </section>
+
+    <section class="impact section">
+      <p class="eyebrow">OUR BIGGER PURPOSE</p>
+      <h2>Small actions. Meaningful impact.</h2>
+      <p>
+        ReCraft AI supports United Nations Sustainable
+        Development Goal 12: Responsible Consumption
+        and Production.
+      </p>
+      <div class="sdg">SDG 12 · RESPONSIBLE CONSUMPTION AND PRODUCTION</div>
+    </section>
+  </main>
+
+  <footer>
+    <a href="#" class="logo">♻ ReCraft<span>AI</span></a>
+    <p>Don't Waste It. Reimagine It. Transform It.</p>
+    <p>Made for a greener tomorrow 🌱</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
